@@ -1,4 +1,4 @@
-# PCM API
+# PIM WEB API
 
 ## Requirements
 

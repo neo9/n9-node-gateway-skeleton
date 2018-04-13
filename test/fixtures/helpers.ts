@@ -35,8 +35,6 @@ export const startAPI = async () => {
 	const start = require('../../src').default;
 	// Require server
 	const ctx = await start();
-	// Drop collections
-	await ctx.db.dropDatabase();
 	// stop server
 	await cb(ctx.server.close.bind(ctx.server));
 	// Start again (to init files)
