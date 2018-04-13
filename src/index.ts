@@ -1,6 +1,7 @@
 import n9Conf from '@neo9/n9-node-conf';
 // Dependencies
-import n9Log from '@neo9/n9-node-log';
+import n9Log, { N9Log } from '@neo9/n9-node-log';
+import { Express } from 'express';
 import { Server } from 'http';
 import { join } from 'path';
 import routingControllersWrapper from 'routing-controllers-wrapper';
@@ -8,6 +9,7 @@ import routingControllersWrapper from 'routing-controllers-wrapper';
 // tslint:disable:no-import-side-effect
 import 'source-map-support/register';
 import { Conf } from './conf';
+import ProxyInit from './modules/proxy/proxy.main';
 
 // Handle Unhandled promise rejections
 process.on('unhandledRejection', /* istanbul ignore next */ (err) => {
@@ -31,11 +33,17 @@ async function start(): Promise<{ server: Server, conf: Conf }> {
 	log.info(initialInfos);
 	log.info('-'.repeat(initialInfos.length));
 
+	const httpConf = conf.http;
+	httpConf.beforeRoutingControllerLaunchHook = async (expressApp: Express) => {
+		log.info('Init proxy');
+		await ProxyInit(conf, log, expressApp);
+	};
+
 	// Load modules
 	const { app, server } = await routingControllersWrapper({
 		hasProxy: true,
 		path: join(__dirname, 'modules'),
-		http: conf.http
+		http: httpConf
 	});
 
 	// Log the startup time

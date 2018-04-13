@@ -7,7 +7,20 @@ const conf: Conf = {
 		routingController: {
 			classTransformer: false,
 		}
-	}
+	},
+	api: [
+		{
+			name: 'pcm',
+			context: '/pcm',
+			target: 'http://pim-pcm-api:8011',
+			options: {
+				pathRewrite: {
+					"^/pcm": ""
+				},
+				changeOrigin: true
+			}
+		}
+	]
 };
 
 export default conf;
