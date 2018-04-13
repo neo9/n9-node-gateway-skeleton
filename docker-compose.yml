@@ -8,3 +8,9 @@ services:
       - ./src:/home/app/src
     ports:
       - 8014:8014
+    networks:
+      - dockerpim_backend
+
+networks:
+  dockerpim_backend:
+    external: true

@@ -7,5 +7,6 @@ COPY ./ ./
 RUN yarn run build
 
 ENV PORT 8014
+ENV NODE_ENV "development"
 
 CMD ["node", "dist/index.js"]
