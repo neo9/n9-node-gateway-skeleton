@@ -3,11 +3,12 @@ import { Express } from 'express';
 import * as proxy from 'http-proxy-middleware';
 import { Conf } from '../../conf';
 import { ServerApi } from './proxy.models';
+import * as Acl from '../acl/acl.main';
 
 export default async function(conf: Conf, log: N9Log, app: Express): Promise<void> {
 	if (global.conf && global.conf.api) {
 		(global.conf.api as ServerApi[]).forEach((serv) => {
-			// app.use(serv.context + '*', check(serv));
+			app.use(serv.context + '*', Acl.check(serv));
 
 			const proxyOptions = Object.assign({ target: serv.target }, serv.options, {
 				logProvider: () => {

@@ -9,12 +9,6 @@ import routingControllersWrapper from 'routing-controllers-wrapper';
 // tslint:disable:no-import-side-effect
 import 'source-map-support/register';
 import { Conf } from './conf';
-import ProxyInit from './modules/proxy/proxy.main';
-
-// Handle Unhandled promise rejections
-process.on('unhandledRejection', /* istanbul ignore next */ (err) => {
-	throw err;
-});
 
 // Load project conf & set as global
 const conf = global.conf = n9Conf({ path: join(__dirname, 'conf') }) as Conf;
@@ -22,6 +16,9 @@ const conf = global.conf = n9Conf({ path: join(__dirname, 'conf') }) as Conf;
 const log = global.log = n9Log(conf.name, global.conf.log);
 // Load loaded configuration
 log.info(`Conf loaded: ${conf.env}`);
+
+import ProxyInit from './modules/proxy/proxy.main';
+import * as Session from './modules/sessions/sessions.main';
 
 // Start method
 async function start(): Promise<{ server: Server, conf: Conf }> {
@@ -35,6 +32,9 @@ async function start(): Promise<{ server: Server, conf: Conf }> {
 
 	const httpConf = conf.http;
 	httpConf.beforeRoutingControllerLaunchHook = async (expressApp: Express) => {
+		log.info('Add JWT decoder');
+		await Session.setJWTLoader(conf, log, expressApp);
+
 		log.info('Init proxy');
 		await ProxyInit(conf, log, expressApp);
 	};

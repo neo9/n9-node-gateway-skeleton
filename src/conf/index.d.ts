@@ -13,6 +13,10 @@ export interface Conf {
 	}[];
 	// n9-micro config
 	http?: RoutingControllerWrapper.HttpOptions;
+	jwt?: {
+		secret: string,
+		expiration: number,
+	};
 	log?: N9Log.Options;
 	env?: string;
 	name?: string;

@@ -8,6 +8,10 @@ const conf: Conf = {
 			classTransformer: false,
 		}
 	},
+	jwt: {
+		secret: 'secret',
+		expiration: 3600 // in seconds, 3600s == 1h
+	},
 	api: [
 		{
 			name: 'pcm',
