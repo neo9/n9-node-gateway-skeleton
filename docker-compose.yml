@@ -1,0 +1,10 @@
+version: '3'
+services:
+  pim-web-api:
+    build: ./
+    image: repo.neo9.pro:9999/pim/web-api
+    command: yarn run dev
+    volumes:
+      - ./src:/home/app/src
+    ports:
+      - 8014:8014
