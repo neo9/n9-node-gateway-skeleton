@@ -2,11 +2,8 @@ import { Conf } from './index';
 
 const conf: Conf = {
 	http: {
-		port: process.env.PORT,
+		port: process.env.PORT || 8014,
 		logLevel: 'dev', // log format for morgan
-		routingController: {
-			classTransformer: false,
-		}
 	},
 	jwt: {
 		secret: 'secret',
@@ -24,7 +21,10 @@ const conf: Conf = {
 				changeOrigin: true
 			}
 		}
-	]
+	],
+	ecrm: {
+		url: 'http://pim-mock-api:8015',
+	}
 };
 
 export default conf;

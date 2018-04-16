@@ -11,6 +11,10 @@ export interface Conf {
 			changeOrigin: boolean;
 		};
 	}[];
+	ecrm?: {
+		url: string;
+	};
+
 	// n9-micro config
 	http?: RoutingControllerWrapper.HttpOptions;
 	jwt?: {

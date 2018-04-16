@@ -1,10 +1,12 @@
 import { N9Error } from '@neo9/n9-node-utils';
 import { NextFunction, Request, RequestHandler, Response } from 'express';
 import * as _ from 'lodash';
-import { Route } from 'routing-controllers-wrapper/dist/src/models/routes.models';
-import { ServerApi } from '../proxy/proxy.models';
+import { TokenContent } from 'pim-commons';
 import * as rp from 'request-promise-native';
 import * as RouteParser from 'route-parser';
+import { Route } from 'routing-controllers-wrapper/dist/src/models/routes.models';
+import { EcrmClient } from '../clients/ecrm.client';
+import { ServerApi } from '../proxy/proxy.models';
 import { RouteForAcl } from './acl.models';
 
 const conf = global.conf;
@@ -57,6 +59,7 @@ async function loadAclContext(server: ServerApi, url: string, params: { [p: stri
 		throw err;
 	}
 }
+
 //
 // async function checkAclFromEcrm(acl: AcessControl, params: { [p: string]: string } | boolean, context: object, req: Request): Promise<{ ok: boolean }> {
 // 	// TODO: replace me with connector
@@ -100,9 +103,17 @@ async function checkAcl(server: ServerApi, routes: RouteForAcl[], req: Request, 
 	if (foundRoute.acl.loadPath) {
 		context = await loadAclContext(server, foundRoute.acl.loadPath, foundRouteParams, req);
 	}
-	// console.log(`-- acl.main.ts foundRoute.acl, foundRouteParams, context --`, foundRoute.acl, foundRouteParams, context, JSON.parse(req.headers.session));
-	// fetch user data from mock
-	// fetch check acl with imperium
+	if (req.headers.session) {
+		const session: TokenContent = JSON.parse(req.headers.session as string);
+
+		const ecrmClient = new EcrmClient();
+		const user = await ecrmClient.getUserById(session.userId);
+		// console.log(`-- acl.main.ts user --`, user);
+		// console.log(`-- acl.main.ts foundRoute.acl, foundRouteParams, context --`, foundRoute.acl, foundRouteParams, context, JSON.parse(req.headers.session as string));
+		// fetch check acl with imperium
+	} else {
+		throw new N9Error('no-session-provided', 401);
+	}
 
 	// return await checkAclFromEcrm(foundRoute.acl, foundRouteParams, context, req);
 	return true;
