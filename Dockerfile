@@ -1,8 +1,5 @@
-FROM repo.neo9.pro:9999/node:lts
+FROM repo.neo9.pro:9999/node-yarn:8.11
 
-COPY package.json ./
-COPY yarn.lock ./
-RUN yarn install
 COPY ./ ./
 RUN yarn run build
 
