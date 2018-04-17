@@ -1,4 +1,4 @@
-FROM repo.neo9.pro:9999/node-yarn:8.11
+FROM repo.neo9.pro:9999/node/nexus-yarn:8.11
 
 COPY ./ ./
 RUN yarn run build
