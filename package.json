@@ -53,6 +53,7 @@
     "lodash": "^4.17.5",
     "nodemon": "^1.17.3",
     "nyc": "^11.6.0",
+    "pim-commons": "^0.0.5",
     "release-it": "^7.3.0",
     "request-promise-native": "^1.0.5",
     "route-parser": "^0.0.5",

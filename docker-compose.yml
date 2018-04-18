@@ -6,11 +6,15 @@ services:
     command: yarn run dev
     volumes:
       - ./src:/home/app/src
+      - commons_pim-commons:/home/app/node_modules/pim-commons
     ports:
       - 8014:8014
     networks:
       - dockerpim_backend
 
+volumes:
+  commons_pim-commons:
+    external: true
 networks:
   dockerpim_backend:
     external: true
