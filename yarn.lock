@@ -4668,7 +4668,7 @@ pify@^3.0.0:
 
 pim-commons@^0.0.5:
   version "0.0.5"
-  resolved "https://repo.neo9.pro/repository/npm-global/pim-commons/-/pim-commons-0.0.5.tgz#3f3e2ab6c8ef9df207f3cdf72f265602b2226237"
+  resolved "https://repo.neo9.pro/repository/npm-global/pim-commons/-/pim-commons-0.0.5.tgz#e68d3d53332301e12400f32f854290d690d70da1"
   dependencies:
     "@types/mongodb" "^3.0.13"
     class-validator "^0.8.5"
