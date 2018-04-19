@@ -5,7 +5,7 @@ import * as request from 'request-promise-native';
 import { Service } from "typedi";
 import * as UrlJoin from "url-join";
 import { Conf } from '../../conf';
-import { User } from 'pim-commons';
+import { User } from '../../models/users/users.models';
 
 @Service()
 export class EcrmClient {

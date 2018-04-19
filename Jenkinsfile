@@ -1,8 +1,8 @@
 library('pipeline')_
 
 DockerPipeline {
-	imageName = "web-api"
-	project = "pim"
+	imageName = "gateway-skeleton"
+	project = "project"
 	tests = ["yarn test"]
 	dockerRequirements = [
 	'mongo:3.6-jessie': [
@@ -12,5 +12,5 @@ DockerPipeline {
 	]
 	deployment = true
 	deployBranches = ['master', 'develop']
-	notifications = [email: 'pim@neo9.fr', slack: 'pim']
+	notifications = [email: 'alert@test.com', slack: 'slack-chn']
 }

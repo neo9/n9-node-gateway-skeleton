@@ -1,6 +1,6 @@
 import { Request } from 'express';
 import * as Imperium from 'imperium';
-import { User } from 'pim-commons';
+import { User } from '../../models/users/users.models';
 
 const conf = global.conf;
 const log = global.log.module('acl-roles');

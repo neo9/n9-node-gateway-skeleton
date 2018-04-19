@@ -2,8 +2,8 @@ import { N9Log } from '@neo9/n9-node-log';
 import { N9Error } from '@neo9/n9-node-utils';
 import { Express, NextFunction, Request, Response } from 'express';
 import * as JWT from 'jsonwebtoken';
-import { TokenContent } from 'pim-commons';
 import { Conf } from '../../conf';
+import { TokenContent } from '../../models/users/users.models';
 
 export async function setJWTLoader(conf: Conf, log: N9Log, app: Express): Promise<void> {
 	if (conf.jwt) {

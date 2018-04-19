@@ -1,17 +1,16 @@
 version: '3'
 services:
-  pim-web-api:
+  gateway-skeleton:
     build: ./
-    image: repo.neo9.pro:9999/pim/web-api
+    image: repo.neo9.pro:9999/gateway-skeleton
     command: yarn run dev
     volumes:
       - ./src:/home/app/src
-      - ../commons/dist:/home/app/node_modules/pim-commons/dist
     ports:
       - 8014:8014
     networks:
-      - dockerpim_backend
+      - docker_backend
 
 networks:
-  dockerpim_backend:
+  docker_backend:
     external: true

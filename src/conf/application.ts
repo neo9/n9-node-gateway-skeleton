@@ -13,7 +13,7 @@ const conf: Conf = {
 		{
 			name: 'pcm',
 			context: '/pcm',
-			target: 'http://pim-pcm-api:8011',
+			target: 'http://pcm-api:8011',
 			options: {
 				pathRewrite: {
 					"^/pcm": ""
@@ -23,7 +23,7 @@ const conf: Conf = {
 		}
 	],
 	ecrm: {
-		url: 'http://pim-mock-api:8015',
+		url: 'http://mock-api:8015',
 	}
 };
 

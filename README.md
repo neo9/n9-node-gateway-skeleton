@@ -1,4 +1,4 @@
-# PIM WEB API
+# N9 NODE GATEWAY SKELETON
 
 ## Requirements
 
