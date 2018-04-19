@@ -1,5 +1,6 @@
 import { N9Error } from '@neo9/n9-node-utils';
 import { NextFunction, Request, RequestHandler, Response } from 'express';
+import * as Imperium from 'imperium';
 import * as _ from 'lodash';
 import { TokenContent } from 'pim-commons';
 import * as rp from 'request-promise-native';
@@ -44,16 +45,22 @@ async function getOrFetchRoutes(server: ServerApi): Promise<RouteForAcl[]> {
 	return routes;
 }
 
-async function loadAclContext(server: ServerApi, url: string, params: { [p: string]: string } | boolean, req: Request): Promise<object> {
+async function loadAclContext(server: ServerApi, url: string, params: { [key: string]: string }, req: Request): Promise<object> {
 	try {
-		const res = await requestDefault({
-			uri: server.target + url,
-			qs: _.assignIn(params, req.query),
-			headers: {
-				session: req.headers.session
-			}
-		});
-		return res.body;
+		let res;
+		params = params || {};
+		if (url) {
+			res = await requestDefault({
+				uri: server.target + url,
+				qs: Object.assign({}, params, req.query),
+				headers: {
+					session: req.headers.session
+				}
+			});
+			return Object.assign({}, params, res.body);
+		} else {
+			return params;
+		}
 	} catch (err) {
 		log.error(`Error on load acl context ${err}`);
 		throw err;
@@ -99,23 +106,30 @@ async function checkAcl(server: ServerApi, routes: RouteForAcl[], req: Request, 
 	// the route need acl, so one update token
 	const foundRouteParams = foundRoute.matcher.match(goodUrl);
 
-	let context = {};
-	if (foundRoute.acl.loadPath) {
-		context = await loadAclContext(server, foundRoute.acl.loadPath, foundRouteParams, req);
-	}
+	const context = await loadAclContext(server, foundRoute.acl.loadPath, foundRouteParams as { [key: string]: string }, req);
 	if (req.headers.session) {
 		const session: TokenContent = JSON.parse(req.headers.session as string);
+		const user = await new EcrmClient().getUserById(session.userId);
 
-		const ecrmClient = new EcrmClient();
-		const user = await ecrmClient.getUserById(session.userId);
-		// console.log(`-- acl.main.ts user --`, user);
-		// console.log(`-- acl.main.ts foundRoute.acl, foundRouteParams, context --`, foundRoute.acl, foundRouteParams, context, JSON.parse(req.headers.session as string));
+		req['session'] = session;
+		req.params = context;
+		req['user'] = user;
+
+		// console.log('-**- user : ', user);
+		// console.log('-**- session : ', session);
+		// console.log('-**- context : ', context);
+
 		// fetch check acl with imperium
+		await new Promise((resolve, reject) => {
+			Imperium.can(foundRoute.acl.perms)(req, null, (err) => {
+				if (err) reject(err);
+				else resolve();
+			});
+		});
 	} else {
 		throw new N9Error('no-session-provided', 401);
 	}
 
-	// return await checkAclFromEcrm(foundRoute.acl, foundRouteParams, context, req);
 	return true;
 }
 
@@ -128,12 +142,10 @@ function check(server: ServerApi): RequestHandler {
 
 			await checkAcl(server, routes, req, res);
 		} catch (err) {
-			if (['too-old-session', 'jwt expired'].indexOf(_.get(err, 'error.code')) !== -1) {
-				return next(new N9Error(err.error.code, 401));
-			} else if (['too-old-session', 'jwt expired'].indexOf(_.get(err, 'context.code')) !== -1) {
-				return next(new N9Error(err.context.code, 401));
+			if (err.message) {
+				log.error(err.message);
 			}
-			return next(new N9Error('invalid-perms-web-api', 401));
+			return next(new N9Error('invalid-perms', 401));
 		}
 		return next();
 	};

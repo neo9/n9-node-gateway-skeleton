@@ -19,6 +19,7 @@ log.info(`Conf loaded: ${conf.env}`);
 
 import ProxyInit from './modules/proxy/proxy.main';
 import * as Session from './modules/sessions/sessions.main';
+import * as Roles from './modules/acl/acl.roles';
 
 // Start method
 async function start(): Promise<{ server: Server, conf: Conf }> {
@@ -29,6 +30,8 @@ async function start(): Promise<{ server: Server, conf: Conf }> {
 	log.info('-'.repeat(initialInfos.length));
 	log.info(initialInfos);
 	log.info('-'.repeat(initialInfos.length));
+
+	await Roles.defineRoles();
 
 	const httpConf = conf.http;
 	httpConf.beforeRoutingControllerLaunchHook = async (expressApp: Express) => {

@@ -3179,6 +3179,12 @@ ignore@^3.3.5:
   version "3.3.7"
   resolved "https://registry.yarnpkg.com/ignore/-/ignore-3.3.7.tgz#612289bfb3c220e186a58118618d5be8c1bab021"
 
+imperium@^2.0.1:
+  version "2.0.1"
+  resolved "https://repo.neo9.pro/repository/npm-global/imperium/-/imperium-2.0.1.tgz#aea09ec790322626c40895d3baebb036b3ff5bce"
+  dependencies:
+    lodash "^4.17.4"
+
 import-lazy@^2.1.0:
   version "2.1.0"
   resolved "https://registry.yarnpkg.com/import-lazy/-/import-lazy-2.1.0.tgz#05698e3d45c88e8d7e9d92cb0584e77f096f3e43"
@@ -4668,7 +4674,7 @@ pify@^3.0.0:
 
 pim-commons@^0.0.5:
   version "0.0.5"
-  resolved "https://repo.neo9.pro/repository/npm-global/pim-commons/-/pim-commons-0.0.5.tgz#e68d3d53332301e12400f32f854290d690d70da1"
+  resolved "https://repo.neo9.pro/repository/npm-global/pim-commons/-/pim-commons-0.0.5.tgz#ec9c4e856a372e3a4eec62851cb171e57b7559e0"
   dependencies:
     "@types/mongodb" "^3.0.13"
     class-validator "^0.8.5"

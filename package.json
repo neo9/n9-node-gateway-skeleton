@@ -49,6 +49,7 @@
     "copyfiles": "^2.0.0",
     "glob": "^7.1.2",
     "http-proxy-middleware": "^0.18.0",
+    "imperium": "^2.0.1",
     "jsonwebtoken": "^8.2.1",
     "lodash": "^4.17.5",
     "nodemon": "^1.17.3",

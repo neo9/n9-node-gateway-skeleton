@@ -1,17 +1,18 @@
 import { N9Log } from '@neo9/n9-node-log';
-import { Request, Response, Express, NextFunction } from 'express';
-import { Conf } from '../../conf';
-import * as Acl from '../acl/acl.main';
-import { ServerApi } from '../proxy/proxy.models';
+import { N9Error } from '@neo9/n9-node-utils';
+import { Express, NextFunction, Request, Response } from 'express';
 import * as JWT from 'jsonwebtoken';
+import { TokenContent } from 'pim-commons';
+import { Conf } from '../../conf';
 
 export async function setJWTLoader(conf: Conf, log: N9Log, app: Express): Promise<void> {
 	if (conf.jwt) {
 		app.use((req: Request, res: Response, next: NextFunction) => {
 			if (req.headers.authorization) {
-				JWT.verify(req.headers.authorization as string, conf.jwt.secret, (err, decodedToken) => {
+				JWT.verify(req.headers.authorization as string, conf.jwt.secret, (err, decodedToken: TokenContent) => {
 					if (err) {
-						next(err);
+						log.error('Error while decoding JWT ', err);
+						next(new N9Error((err.message || 'unknown-error').replace(/ /g, '-'), 401));
 					} else {
 						req.headers.session = JSON.stringify(decodedToken);
 						next();
