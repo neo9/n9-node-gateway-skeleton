@@ -4,7 +4,7 @@ import * as Imperium from 'imperium';
 import * as _ from 'lodash';
 import * as rp from 'request-promise-native';
 import * as RouteParser from 'route-parser';
-import { Route } from 'routing-controllers-wrapper/dist/src/models/routes.models';
+import { Route } from 'n9-node-routing/dist/src/models/routes.models';
 import { TokenContent } from '../../models/users/users.models';
 import { EcrmClient } from '../clients/ecrm.client';
 import { ServerApi } from '../proxy/proxy.models';
