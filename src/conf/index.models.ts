@@ -1,5 +1,5 @@
 import { N9Log } from '@neo9/n9-node-log';
-import { RoutingControllerWrapper } from 'routing-controllers-wrapper';
+import { N9NodeRouting } from 'n9-node-routing';
 
 export interface Conf {
 	api?: {
@@ -16,7 +16,7 @@ export interface Conf {
 	};
 
 	// n9-micro config
-	http?: RoutingControllerWrapper.HttpOptions;
+	http?: N9NodeRouting.HttpOptions;
 	jwt?: {
 		secret: string,
 		expiration: number,

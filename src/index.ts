@@ -8,7 +8,7 @@ import routingControllersWrapper from 'n9-node-routing';
 // Add source map supports
 // tslint:disable:no-import-side-effect
 import 'source-map-support/register';
-import { Conf } from './conf';
+import { Conf } from './conf/index.models';
 
 // Load project conf & set as global
 const conf = global.conf = n9Conf({ path: join(__dirname, 'conf') }) as Conf;

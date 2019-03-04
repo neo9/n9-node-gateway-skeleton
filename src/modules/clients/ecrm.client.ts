@@ -1,37 +1,29 @@
 import { N9Log } from '@neo9/n9-node-log';
 import { N9Error } from '@neo9/n9-node-utils';
-import { CoreOptions, Request, RequestAPI, RequiredUriUrl } from 'request';
-import * as request from 'request-promise-native';
-import { Service } from "typedi";
-import * as UrlJoin from "url-join";
-import { Conf } from '../../conf';
+import { N9HttpClient } from 'n9-node-routing';
+import { Inject, Service } from 'typedi';
+import { Conf } from '../../conf/index.models';
 import { User } from '../../models/users/users.models';
 
 @Service()
 export class EcrmClient {
 
-	private readonly logger: N9Log;
-	private readonly requestDefault: RequestAPI<Request, CoreOptions, RequiredUriUrl>;
+	@Inject('N9HttpClient')
+	private httpClient: N9HttpClient;
+
+	@Inject('conf')
 	private readonly conf: Conf;
+
+	@Inject('logger')
+	private readonly logger: N9Log;
 
 	constructor() {
 		this.conf = global.conf;
-		this.logger = global.log.module('ecrm-client');
-		this.requestDefault = request.defaults({
-			useQuerystring: true,
-			json: true,
-			resolveWithFullResponse: true,
-			gzip: true
-		});
 	}
 
 	public async getUserById(userId: string): Promise<User> {
 		try {
-			const res = await this.requestDefault({
-				uri: UrlJoin(this.conf.ecrm.url, '/ecrm/users/' + userId)
-			});
-
-			return res.body as any;
+			return await this.httpClient.get<User>([this.conf.ecrm.url, 'ecrm', 'users', userId]);
 		} catch (e) {
 			this.logger.error(`Error on get user by id : ${userId}`, e);
 			if (e.error) {

@@ -1,4 +1,4 @@
-FROM repo.neo9.pro:9999/node/nexus-yarn:8.11
+FROM eu.gcr.io/neo9-catalogue/node:nexus-yarn-10.12
 
 COPY ./ ./
 RUN yarn run build

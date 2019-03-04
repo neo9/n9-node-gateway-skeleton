@@ -1,7 +1,7 @@
 import { N9Log } from '@neo9/n9-node-log';
 import { Express } from 'express';
 import * as proxy from 'http-proxy-middleware';
-import { Conf } from '../../conf';
+import { Conf } from '../../conf/index.models';
 import { ServerApi } from './proxy.models';
 import * as Acl from '../acl/acl.main';
 
