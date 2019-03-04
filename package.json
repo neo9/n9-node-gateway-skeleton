@@ -2,7 +2,7 @@
   "name": "gateway-skeleton",
   "description": "Gateway Skeleton",
   "private": true,
-  "version": "0.0.0",
+  "version": "0.1.0",
   "main": "index.js",
   "devDependencies": {},
   "scripts": {
