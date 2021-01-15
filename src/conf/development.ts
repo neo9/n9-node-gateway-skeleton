@@ -1,6 +1,5 @@
 import { Conf } from './index.models';
 
-const conf: Conf = {
-};
+const conf: Conf = {};
 
 export default conf;

@@ -1,4 +1,3 @@
-
 export interface ServerApi {
 	name: string;
 	context: string;

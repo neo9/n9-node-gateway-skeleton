@@ -2,25 +2,24 @@ import { Request } from 'express';
 import * as Imperium from 'imperium';
 import { User } from '../../models/users/users.models';
 
-const conf = global.conf;
-const log = global.log.module('acl-roles');
+function defineRole(role: string): any {
+	return Imperium.role(role, async (req: Request) => {
+		const user: User = (req as any).user;
+
+		if (user.roles?.includes(role)) {
+			return {
+				user: (req as any).session.userId,
+			};
+		}
+	});
+}
 
 async function defineRoles(): Promise<void> {
 	Imperium.role('USER_OWNER', async (req: Request) => {
-		return { user: req['session'].userId };
-	})
-			.can('seeUser', { user: '@' });
+		return { user: (req as any).session.userId };
+	}).can('seeUser', { user: '@' });
 
-	Imperium.role('ADMIN', async (req: Request) => {
-		const user = req['user'] as User;
-
-		if (user.roles && user.roles.indexOf('ADMIN') !== -1) {
-			return {
-				user: req['session'].userId
-			};
-		}
-	})
-			.can('createUser');
+	defineRole('ADMIN').can('createUser');
 }
 
 export { defineRoles };

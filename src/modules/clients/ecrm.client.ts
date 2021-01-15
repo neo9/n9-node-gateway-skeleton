@@ -7,7 +7,6 @@ import { User } from '../../models/users/users.models';
 
 @Service()
 export class EcrmClient {
-
 	@Inject('N9HttpClient')
 	private httpClient: N9HttpClient;
 

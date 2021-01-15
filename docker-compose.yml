@@ -1,16 +1,25 @@
-version: '3'
+version: '3.4'
 services:
-  gateway-skeleton:
-    build: ./
-    image: repo.neo9.pro:9999/gateway-skeleton
+  gateway-starter-api:
+    build:
+      context: ./
+      target: builder
+    image: gateway-starter-api
     command: yarn run dev
     volumes:
       - ./src:/home/app/src
+      - ./package.json:/home/app/package.json
+      - ./nodemon.json:/home/app/nodemon.json
+    #      - ../commons-lib/dist:/home/app/node_modules/commons-lib/dist
     ports:
-      - 8014:8014
+      - 8080:8080 # app port
+      - 9101:9101 # metrics port
+      - 10010:10010 # debug port
     networks:
-      - docker_backend
+      - backend
+    environment:
+      DEBUG: n9-node-conf # usefull to debug conf loading
 
 networks:
-  docker_backend:
+  backend:
     external: true

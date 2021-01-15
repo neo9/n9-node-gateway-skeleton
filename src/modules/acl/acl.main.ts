@@ -2,32 +2,26 @@ import { N9Error } from '@neo9/n9-node-utils';
 import { NextFunction, Request, RequestHandler, Response } from 'express';
 import * as Imperium from 'imperium';
 import * as _ from 'lodash';
-import * as rp from 'request-promise-native';
-import * as RouteParser from 'route-parser';
+import { N9HttpClient } from 'n9-node-routing';
 import { Route } from 'n9-node-routing/dist/src/models/routes.models';
+import * as RouteParser from 'route-parser';
 import { TokenContent } from '../../models/users/users.models';
 import { EcrmClient } from '../clients/ecrm.client';
 import { ServerApi } from '../proxy/proxy.models';
 import { RouteForAcl } from './acl.models';
 
-const conf = global.conf;
 const log = global.log.module('acl');
+const httpClient = new N9HttpClient(log);
 
 const routesCache: { [id: string]: Route[] } = {};
-
-const requestDefault = rp.defaults({
-	json: true,
-	resolveWithFullResponse: true
-});
 
 async function fetchRoutes(server: ServerApi): Promise<Route[]> {
 	log.info(`fetching routes for server ${server.name}`);
 
 	try {
-		const res = await requestDefault(server.target + '/routes');
-		return res.body;
+		return await httpClient.get<Route[]>(`${server.target}/routes`);
 	} catch (err) {
-		log.error(`Error on fetch routes ${err}`);
+		log.error(`Error on fetch routes ${err}`, { errString: JSON.stringify(err) });
 		throw err;
 	}
 }
@@ -45,24 +39,27 @@ async function getOrFetchRoutes(server: ServerApi): Promise<RouteForAcl[]> {
 	return routes;
 }
 
-async function loadAclContext(server: ServerApi, url: string, params: { [key: string]: string }, req: Request): Promise<object> {
+async function loadAclContext(
+	server: ServerApi,
+	url: string,
+	params: { [key: string]: string } = {},
+	req: Request<object>,
+): Promise<object> {
 	try {
 		let res;
-		params = params || {};
 		if (url) {
-			res = await requestDefault({
-				uri: server.target + url,
-				qs: Object.assign({}, params, req.query),
-				headers: {
-					session: req.headers.session
-				}
-			});
-			return Object.assign({}, params, res.body);
-		} else {
-			return params;
+			res = await httpClient.get<object>(
+				server.target + url,
+				{ ...params, ...req.query },
+				{
+					session: req.headers.session,
+				},
+			);
+			return { ...params, ...res };
 		}
+		return params;
 	} catch (err) {
-		log.error(`Error on load acl context ${err}`);
+		log.error(`Error on load acl context ${err}`, { errString: JSON.stringify(err) });
 		throw err;
 	}
 }
@@ -93,10 +90,18 @@ async function loadAclContext(server: ServerApi, url: string, params: { [key: st
 
 // check if an url matches any of the route definitions
 function findMatch(routes: RouteForAcl[], calledRoute: string, method: string): RouteForAcl {
-	return _.find(routes, (r) => !!(method === r.method && r.matcher.match(calledRoute))) as RouteForAcl;
+	return _.find(
+		routes,
+		(r) => !!(method === r.method && r.matcher.match(calledRoute)),
+	) as RouteForAcl;
 }
 
-async function checkAcl(server: ServerApi, routes: RouteForAcl[], req: Request, res: Response): Promise<boolean> {
+async function checkAcl(
+	server: ServerApi,
+	routes: RouteForAcl[],
+	req: Request<object>,
+	res: Response,
+): Promise<boolean> {
 	const goodUrl = req.baseUrl.replace(server.context, '');
 	const foundRoute = findMatch(routes, goodUrl, req.method.toLowerCase());
 
@@ -106,25 +111,34 @@ async function checkAcl(server: ServerApi, routes: RouteForAcl[], req: Request, 
 	// the route need acl, so one update token
 	const foundRouteParams = foundRoute.matcher.match(goodUrl);
 
-	const context = await loadAclContext(server, foundRoute.acl.loadPath, foundRouteParams as { [key: string]: string }, req);
+	const context = await loadAclContext(
+		server,
+		foundRoute.acl.loadPath,
+		foundRouteParams as { [key: string]: string },
+		req,
+	);
 	if (req.headers.session) {
 		const session: TokenContent = JSON.parse(req.headers.session as string);
 		const user = await new EcrmClient().getUserById(session.userId);
 
-		req['session'] = session;
+		(req as any).session = session;
 		req.params = context;
-		req['user'] = user;
+		(req as any).user = user;
 
 		// console.log('-**- user : ', user);
 		// console.log('-**- session : ', session);
 		// console.log('-**- context : ', context);
 
 		// fetch check acl with imperium
-		await new Promise((resolve, reject) => {
-			Imperium.can(foundRoute.acl.perms)(req, null, (err) => {
-				if (err) reject(err);
-				else resolve();
-			});
+		await new Promise<void>(async (resolve, reject) => {
+			(await Imperium.can(foundRoute.acl.perms as Imperium.Action[]))(
+				req as any,
+				null,
+				(err: any) => {
+					if (err) reject(err);
+					else resolve();
+				},
+			);
 		});
 	} else {
 		throw new N9Error('no-session-provided', 401);

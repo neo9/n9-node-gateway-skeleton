@@ -1,53 +1,48 @@
 // NPM modules
 import { cb } from '@neo9/n9-node-utils';
-import test, { Assertions } from 'ava';
-import { context, get, post, startAPI } from './fixtures/helpers';
+import ava, { Assertions, ExecutionContext } from 'ava';
+import { context, get, startAPI } from './fixtures/helpers';
 
 /*
-** Start API
-*/
-test.before('Start API', async (t: Assertions) => {
+ ** Start API
+ */
+ava.before('Start API', async (t: Assertions) => {
 	await startAPI();
 });
 
 /*
-** Informations routes
-*/
-test.serial('GET / => gateway-skeleton', async (t: Assertions) => {
-	const { statusCode, body, stdout, stderr } = await get('/');
-	t.is(statusCode, 200);
-	t.is(body, 'gateway-skeleton');
-	t.is(stderr.length, 0);
-	t.is(stdout.length, 1);
-	t.true(stdout[0].includes('GET /'));
+ ** Information routes
+ */
+ava.serial('GET / => n9-node-gateway-skeleton', async (t: ExecutionContext) => {
+	const { body, stdout, stderr } = await get<string>('/', 'text');
+	t.is(body, 'n9-node-gateway-skeleton');
+	t.is(stderr.length, 0, `Request has errors: ${JSON.stringify(stderr)}`);
+	t.true(stdout.length > 0, 'Request had no success message');
 });
 
-test.serial('GET /ping => pong', async (t: Assertions) => {
-	const { statusCode, body, stdout, stderr } = await get('/ping');
-	t.is(statusCode, 200);
-	t.is(body, 'pong');
-	t.is(stderr.length, 0);
-	t.is(stdout.length, 1);
-	t.true(stdout[0].includes('GET /ping'));
+ava.serial('GET /ping => pong', async (t: ExecutionContext) => {
+	const { body, stdout, stderr } = await get<string>('/ping', 'text');
+	t.true(body.includes('pong'));
+	t.is(stderr.length, 0, `Request has errors: ${JSON.stringify(stderr)}`);
+	t.not(stdout.length, 0, 'Request had no success message');
 });
 
-test.serial('GET /routes => 1 routes', async (t: Assertions) => {
-	const { statusCode, body } = await get('/routes');
-	t.is(statusCode, 200);
+ava('GET /routes => 1 routes', async (t: ExecutionContext) => {
+	const { body } = await get<any[]>('/routes');
 	t.is(body.length, 0);
 });
 
-test.serial('GET /404 => 404 status code', async (t: Assertions) => {
-	const { statusCode, body } = await get('/404');
-	t.is(statusCode, 404);
-	t.is(body.code, 'not-found');
-	t.is(body.context.url, '/404');
+ava.serial('GET /404 => 404 status code', async (t: ExecutionContext) => {
+	const { err } = await get('/404');
+	t.is(err.status, 404);
+	t.is(err.message, 'not-found');
+	t.is(err.context.srcError.context.url, '/404');
 });
 
 /*
 /*
 ** Stop API
 */
-test.after('Stop server', async (t: Assertions) => {
+ava.after('Stop server', async (t: Assertions) => {
 	await cb(context.server.close.bind(context.server));
 });

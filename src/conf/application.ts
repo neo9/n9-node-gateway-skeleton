@@ -7,24 +7,28 @@ const conf: Conf = {
 	},
 	jwt: {
 		secret: 'secret',
-		expiration: 3600 // in seconds, 3600s == 1h
+		expiration: 3600, // in seconds, 3600s == 1h
+	},
+	metrics: {
+		isEnabled: true,
+		waitDurationMs: 30 * 1_000,
 	},
 	api: [
 		{
-			name: 'pcm',
-			context: '/pcm',
-			target: 'http://pcm-api:8011',
+			name: 'ecrm',
+			context: '/ecrm',
+			target: 'http://ecrm-api:8080',
 			options: {
 				pathRewrite: {
-					"^/pcm": ""
+					'^/ecrm': '',
 				},
-				changeOrigin: true
-			}
-		}
+				changeOrigin: true,
+			},
+		},
 	],
 	ecrm: {
 		url: 'http://mock-api:8015',
-	}
+	},
 };
 
 export default conf;

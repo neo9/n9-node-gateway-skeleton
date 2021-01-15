@@ -1,18 +1,17 @@
 {
+  "$schema": "https://json.schemastore.org/tsconfig",
+  "extends": "@tsconfig/node14/tsconfig.json",
   "compilerOptions": {
-    "module": "commonjs",
-    "target": "es6",
     "outDir": "dist",
     "moduleResolution": "node",
-    "skipLibCheck": true,
     "emitDecoratorMetadata": true,
     "declaration": true,
     "experimentalDecorators": true,
-    "noImplicitAny": false,
-    "sourceMap": true
+    "noImplicitAny": true,
+    "sourceMap": true,
+    "strict": false,
+    "esModuleInterop": false
   },
-  "include": [
-    "src"
-  ],
+  "include": ["src", "test"],
   "exclude": []
 }

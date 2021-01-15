@@ -9,15 +9,19 @@ export async function setJWTLoader(conf: Conf, log: N9Log, app: Express): Promis
 	if (conf.jwt) {
 		app.use((req: Request, res: Response, next: NextFunction) => {
 			if (req.headers.authorization) {
-				JWT.verify(req.headers.authorization as string, conf.jwt.secret, (err, decodedToken: TokenContent) => {
-					if (err) {
-						log.error('Error while decoding JWT ', err);
-						next(new N9Error((err.message || 'unknown-error').replace(/ /g, '-'), 401));
-					} else {
-						req.headers.session = JSON.stringify(decodedToken);
-						next();
-					}
-				});
+				JWT.verify(
+					req.headers.authorization as string,
+					conf.jwt.secret,
+					(err, decodedToken: TokenContent) => {
+						if (err) {
+							log.error('Error while decoding JWT ', err);
+							next(new N9Error((err.message || 'unknown-error').replace(/ /g, '-'), 401));
+						} else {
+							req.headers.session = JSON.stringify(decodedToken);
+							next();
+						}
+					},
+				);
 			} else {
 				next();
 			}
