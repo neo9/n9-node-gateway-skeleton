@@ -21,7 +21,7 @@ RUN yarn run build
 
 CMD ["yarn", "run", "dev"]
 
-FROM node:14.15.4-alpine3.12
+FROM node:14.15.4-alpine3.12 AS runner
 
 WORKDIR /home/app
 

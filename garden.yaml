@@ -1,0 +1,29 @@
+kind: Module
+description: neo9 node gateway skeleton
+type: container
+name: n9-node-gateway-skeleton
+build:
+  targetImage: builder
+services:
+  - name: n9-node-gateway-skeleton
+    args: [yarn, run, dev]
+    ports:
+      - name: http
+        containerPort: 8080
+    ingresses:
+      - path: /
+        port: http
+        annotations:
+          kubernetes.io/ingress.class: "nginx"
+          external-dns.alpha.kubernetes.io/ttl: "5"
+          forecastle.stakater.com/expose: "true"
+        hostname: n9-gw.${providers.kubernetes.outputs.default-hostname}
+    healthCheck:
+      httpGet:
+        path: /ping
+        port: http
+    env:
+      FUNCTION_ENDPOINT: ""
+tests:
+  - name: unit
+    args: [yarn, run, test:dev]
