@@ -82,7 +82,7 @@
     "http-proxy-middleware": "^1.0.6",
     "imperium": "^2.0.2",
     "jsonwebtoken": "^8.2.1",
-    "lodash": "^4.17.5",
+    "lodash": "^4.17.21",
     "n9-node-routing": "^1.27.1",
     "request-promise-native": "^1.0.5",
     "route-parser": "^0.0.5",
