@@ -7,6 +7,8 @@ import * as stdMocks from 'std-mocks';
 import src from '../../src';
 import { Conf } from '../../src/conf/index.models';
 
+const print = true;
+
 export interface TestContext {
 	server: Server;
 	session: string;
@@ -60,13 +62,19 @@ export async function put<T>(
 	return await wrapLogs<T>(httpClient.put<T>(url(path)));
 }
 
-export const startAPI = async () => {
-	stdMocks.use();
+export const startAPI = async (confOverride?: Conf) => {
+	stdMocks.use({ print });
 	// Set env to 'test'
 	process.env.NODE_ENV = 'test';
 	// Start again (to init files)
 
-	const { server, conf } = await src({});
+	const { server, conf } = await src({
+		log: {
+			formatJSON: false,
+		},
+		enableLogFormatJSON: false,
+		...confOverride,
+	});
 
 	// Add variables to t.context
 	context.server = server;
@@ -84,7 +92,7 @@ async function wrapLogs<T>(
 	apiCall: Promise<T>,
 ): Promise<{ body: T; err: N9Error; stdout: string[]; stderr: string[] }> {
 	// Store logs output
-	stdMocks.use();
+	stdMocks.use({ print });
 	// Call API & check response
 	let body = null;
 	let err = null;

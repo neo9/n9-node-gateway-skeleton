@@ -8,7 +8,9 @@ export interface Conf extends N9ConfBaseConf {
 	openapi?: N9NodeRouting.SwaggerOptions;
 	log?: N9Log.Options;
 	shutdown?: N9NodeRouting.ShutdownOptions;
-	metrics?: {
+  enableLogFormatJSON?: boolean;
+
+  metrics?: {
 		isEnabled?: boolean;
 		waitDurationMs?: number;
 	};

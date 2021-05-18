@@ -1,9 +1,5 @@
-// configure class-validator to use the container of type id
-// this needs to be the first done in the file
-import { getFromContainer, MetadataStorage, useContainer } from 'class-validator';
-import { Container as iocContainer } from 'typedi';
-useContainer(iocContainer, {});
-iocContainer.set(MetadataStorage, getFromContainer(MetadataStorage));
+/* tslint:disable:ordered-imports */
+import 'reflect-metadata';
 
 import n9NodeConf from '@neo9/n9-node-conf';
 // Dependencies
@@ -12,29 +8,35 @@ import * as bodyParser from 'body-parser';
 import { Express } from 'express';
 import fastSafeStringify from 'fast-safe-stringify';
 import { Server } from 'http';
-import n9NodeRouting, { N9NodeRouting } from 'n9-node-routing';
+import n9NodeRouting, { N9NodeRouting, Container } from 'n9-node-routing';
 import { join } from 'path';
 // Add source map supports
 // tslint:disable:no-import-side-effect
 import 'source-map-support/register';
 import { Conf } from './conf/index.models';
-
-// Load project conf & set as global
-const conf = (global.conf = n9NodeConf({
-	path: join(__dirname, 'conf'),
-}) as Conf);
-
-// Load logging system
-const log = (global.log = n9NodeLog(conf.name, global.conf.log));
-// Load loaded configuration
-log.info(`Conf loaded: ${conf.env}`);
-
 import * as Roles from './modules/acl/acl.roles';
-import proxyMain from './modules/proxy/proxy.main';
 import * as Session from './modules/sessions/sessions.main';
 
 // Start method
 async function start(confOverride: Partial<Conf> = {}): Promise<{ server: Server; conf: Conf }> {
+	// Load project conf & set as global
+	const conf = (global.conf = n9NodeConf({
+		path: join(__dirname, 'conf'),
+		extendConfig: {
+			key: 'starterApi',
+			path: {
+				relative: './env/env.yaml',
+			},
+		},
+		override: {
+			value: confOverride,
+		},
+	}) as Conf);
+
+	const log = (global.log = n9NodeLog(conf.name, global.conf.log));
+	// Load loaded configuration
+	log.info(`Conf loaded: ${conf.env}`);
+
 	// Profile startup boot time
 	log.profile('startup');
 	// print app infos
@@ -43,10 +45,11 @@ async function start(confOverride: Partial<Conf> = {}): Promise<{ server: Server
 	log.info(initialInfos);
 	log.info('-'.repeat(initialInfos.length));
 
+	const proxyMain = require('./modules/proxy/proxy.main').default;
 	await Roles.defineRoles();
 
 	const callbacksBeforeShutdown: N9NodeRouting.CallbacksBeforeShutdown[] = [];
-	iocContainer.set('callbacksBeforeShutdown', callbacksBeforeShutdown);
+	Container.set('callbacksBeforeShutdown', callbacksBeforeShutdown);
 
 	// Load modules
 	const { server } = await n9NodeRouting({
@@ -62,6 +65,7 @@ async function start(confOverride: Partial<Conf> = {}): Promise<{ server: Server
 				await proxyMain(conf, log, app2);
 			},
 		},
+		enableLogFormatJSON: conf.enableLogFormatJSON,
 		openapi: conf.openapi,
 		shutdown: {
 			...conf.shutdown,
