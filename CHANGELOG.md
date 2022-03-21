@@ -1,4 +1,25 @@
-# Version 0.1.0 (2019-03-04)
+
+
+## [0.1.1](https://github.com/neo9/n9-node-gateway-skeleton/compare/0.1.0...0.1.1) (2022-03-21)
+
+
+### doc
+
+* Remove mongodb references ([64e3b04](https://github.com/neo9/n9-node-gateway-skeleton/commit/64e3b04c940a88064a04f76c1516e70e00cfaa25))
+
+### upgrade
+
+* Upgrade all dependencies and run on to NodeJS 14 ([97dcae2](https://github.com/neo9/n9-node-gateway-skeleton/commit/97dcae2608f157668019e1c1ee62c2cee8319c85))
+
+### yarn
+
+* Fix security by updating dependencies ([f94edb8](https://github.com/neo9/n9-node-gateway-skeleton/commit/f94edb87f860f7c67f5e9c6a1a25fb92bd9a7e6d))
+* Fix security issue and dependencies for dependencies urijs tar ([96253b0](https://github.com/neo9/n9-node-gateway-skeleton/commit/96253b0425b375aa592cb281b4c064258051b66c))
+* Fix security issue by upgrading dependency color-string ([9d9d068](https://github.com/neo9/n9-node-gateway-skeleton/commit/9d9d06876293f2c42015680aa45b30691c796a0d))
+* Upgrade all dependencies and nodejs to version 16 ([64fc3c3](https://github.com/neo9/n9-node-gateway-skeleton/commit/64fc3c3bf53b578792db07bab0330371394a047d))
+* Upgrade all transitive dependencies ([2674055](https://github.com/neo9/n9-node-gateway-skeleton/commit/2674055f35d105cd779979b2421d79ae92be18ba))
+* Upgrade dependencies and node to 14.17.0 ([7ff8b51](https://github.com/neo9/n9-node-gateway-skeleton/commit/7ff8b511891018b8fc797366a06e50278a09ad15))
+* Upgrade n9-node-routing to latest ([2ba7779](https://github.com/neo9/n9-node-gateway-skeleton/commit/2ba77798ca382b37a12e2bf51a3fac9679b17572))# Version 0.1.0 (2019-03-04)
 
 
 ### acl
@@ -52,6 +73,3 @@
 * Upgrade commons ([7565573](https://github.com/neo9/n9-node-gateway-skeleton/commit/7565573)) (Benjamin Daniel)
 * Upgrade commons ([468ca78](https://github.com/neo9/n9-node-gateway-skeleton/commit/468ca78)) (Benjamin Daniel)
 * Upgrade n9-node-routing to add openapi and swagger ui ([4eacd05](https://github.com/neo9/n9-node-gateway-skeleton/commit/4eacd05)) (Benjamin Daniel)
-
-
-
