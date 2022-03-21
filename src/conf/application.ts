@@ -20,6 +20,7 @@ const conf: Conf = {
 			target: 'http://ecrm-api:8080',
 			options: {
 				pathRewrite: {
+					// eslint-disable-next-line @typescript-eslint/naming-convention
 					'^/ecrm': '',
 				},
 				changeOrigin: true,

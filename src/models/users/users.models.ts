@@ -1,6 +1,5 @@
 import { ObjectID } from 'bson';
-import { Exclude } from 'class-transformer';
-import { Allow, IsEmail, IsString, MinLength } from 'class-validator';
+import { Allow, Exclude, IsEmail, IsString, MinLength } from 'n9-node-routing';
 
 export type UserType = 'BACK' | 'DOCTOR' | 'NURSE' | 'SALESPERSON' | 'ASSISTANT' | 'SUPERVISOR';
 

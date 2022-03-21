@@ -1,7 +1,5 @@
-import { N9Log } from '@neo9/n9-node-log';
-import { N9Error } from '@neo9/n9-node-utils';
-import { N9HttpClient } from 'n9-node-routing';
-import { Inject, Service } from 'typedi';
+import { Inject, N9Error, N9HttpClient, N9Log, Service } from 'n9-node-routing';
+
 import { Conf } from '../../conf/index.models';
 import { User } from '../../models/users/users.models';
 

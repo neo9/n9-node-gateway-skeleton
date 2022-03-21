@@ -1,16 +1,16 @@
-import { N9Log } from '@neo9/n9-node-log';
-import { N9Error } from '@neo9/n9-node-utils';
-import { Express, NextFunction, Request, Response } from 'express';
+import type { Express, NextFunction, Request, Response } from 'express';
 import * as JWT from 'jsonwebtoken';
+import { N9Error, N9Log } from 'n9-node-routing';
+
 import { Conf } from '../../conf/index.models';
 import { TokenContent } from '../../models/users/users.models';
 
-export async function setJWTLoader(conf: Conf, log: N9Log, app: Express): Promise<void> {
+export function setJWTLoader(conf: Conf, log: N9Log, app: Express): void {
 	if (conf.jwt) {
 		app.use((req: Request, res: Response, next: NextFunction) => {
 			if (req.headers.authorization) {
 				JWT.verify(
-					req.headers.authorization as string,
+					req.headers.authorization,
 					conf.jwt.secret,
 					(err, decodedToken: TokenContent) => {
 						if (err) {

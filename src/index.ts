@@ -1,40 +1,42 @@
-/* tslint:disable:ordered-imports */
+// eslint-disable-next-line import/no-extraneous-dependencies
 import 'reflect-metadata';
-
-import n9NodeConf from '@neo9/n9-node-conf';
-// Dependencies
-import n9NodeLog from '@neo9/n9-node-log';
-import * as bodyParser from 'body-parser';
-import { Express } from 'express';
-import fastSafeStringify from 'fast-safe-stringify';
-import { Server } from 'http';
-import n9NodeRouting, { N9NodeRouting, Container } from 'n9-node-routing';
-import { join } from 'path';
 // Add source map supports
 // tslint:disable:no-import-side-effect
 import 'source-map-support/register';
+
+import n9NodeConf from '@neo9/n9-node-conf';
+import type { Express } from 'express';
+// eslint-disable-next-line import/no-extraneous-dependencies
+import fastSafeStringify from 'fast-safe-stringify';
+import { Server } from 'http';
+// Dependencies
+import n9NodeRouting, { Container, N9Log, N9NodeRouting } from 'n9-node-routing';
+import { join } from 'path';
+
 import { Conf } from './conf/index.models';
 import * as Roles from './modules/acl/acl.roles';
+import proxyMain from './modules/proxy/proxy.main';
 import * as Session from './modules/sessions/sessions.main';
 
 // Start method
 async function start(confOverride: Partial<Conf> = {}): Promise<{ server: Server; conf: Conf }> {
 	// Load project conf & set as global
-	const conf = (global.conf = n9NodeConf({
+	const conf = n9NodeConf({
 		path: join(__dirname, 'conf'),
 		extendConfig: {
-			key: 'starterApi',
 			path: {
-				relative: './env/env.yaml',
+				relative: './env/env.json',
 			},
+			key: 'starterApi',
 		},
 		override: {
 			value: confOverride,
 		},
-	}) as Conf);
+	}) as Conf;
+	global.conf = conf;
 
-	const log = (global.log = n9NodeLog(conf.name, global.conf.log));
-	// Load loaded configuration
+	const log = new N9Log(conf.name, conf.log);
+	global.log = log; // Load loaded configuration
 	log.info(`Conf loaded: ${conf.env}`);
 
 	// Profile startup boot time
@@ -45,8 +47,7 @@ async function start(confOverride: Partial<Conf> = {}): Promise<{ server: Server
 	log.info(initialInfos);
 	log.info('-'.repeat(initialInfos.length));
 
-	const proxyMain = require('./modules/proxy/proxy.main').default;
-	await Roles.defineRoles();
+	Roles.defineRoles();
 
 	const callbacksBeforeShutdown: N9NodeRouting.CallbacksBeforeShutdown[] = [];
 	Container.set('callbacksBeforeShutdown', callbacksBeforeShutdown);
@@ -57,12 +58,12 @@ async function start(confOverride: Partial<Conf> = {}): Promise<{ server: Server
 		path: join(__dirname, 'modules'),
 		http: {
 			...conf.http,
-			beforeRoutingControllerLaunchHook: async (app2: Express) => {
+			beforeRoutingControllerLaunchHook: (app2: Express) => {
 				log.info('Add JWT decoder');
-				await Session.setJWTLoader(conf, log, app2);
+				Session.setJWTLoader(conf, log, app2);
 
 				log.info('Init proxy');
-				await proxyMain(conf, log, app2);
+				proxyMain(conf, log, app2);
 			},
 		},
 		enableLogFormatJSON: conf.enableLogFormatJSON,

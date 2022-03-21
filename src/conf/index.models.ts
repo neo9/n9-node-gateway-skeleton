@@ -1,6 +1,5 @@
 import { N9ConfBaseConf } from '@neo9/n9-node-conf';
-import { N9Log } from '@neo9/n9-node-log';
-import { N9NodeRouting } from 'n9-node-routing';
+import { N9Log, N9NodeRouting } from 'n9-node-routing';
 
 export interface Conf extends N9ConfBaseConf {
 	// n9-node-micro config
@@ -8,9 +7,9 @@ export interface Conf extends N9ConfBaseConf {
 	openapi?: N9NodeRouting.SwaggerOptions;
 	log?: N9Log.Options;
 	shutdown?: N9NodeRouting.ShutdownOptions;
-  enableLogFormatJSON?: boolean;
+	enableLogFormatJSON?: boolean;
 
-  metrics?: {
+	metrics?: {
 		isEnabled?: boolean;
 		waitDurationMs?: number;
 	};

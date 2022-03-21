@@ -1,17 +1,30 @@
-import { N9Log } from '@neo9/n9-node-log';
-import { Express } from 'express';
+import type { Express } from 'express';
 import * as proxy from 'http-proxy-middleware';
+import { Container, N9Log } from 'n9-node-routing';
+
 import { Conf } from '../../conf/index.models';
-import * as Acl from '../acl/acl.main';
+import { AclService } from '../acl/acl.service';
 import { ServerApi } from './proxy.models';
 
-export default async function (conf: Conf, log: N9Log, app: Express): Promise<void> {
+declare type Logger = (...args: any[]) => void;
+interface LogProvider {
+	log: Logger;
+	debug?: Logger;
+	info?: Logger;
+	warn?: Logger;
+	error?: Logger;
+}
+
+export default (conf: Conf, log: N9Log, app: Express): void => {
+	const aclService: AclService = Container.get(AclService);
 	if (global.conf && global.conf.api) {
 		(global.conf.api as ServerApi[]).forEach((serv) => {
-			app.use(`${serv.context}*`, Acl.check(serv));
+			app.use(`${serv.context}*`, aclService.check(serv));
 
-			const proxyOptions = Object.assign({ target: serv.target }, serv.options, {
-				logProvider: () => {
+			const proxyOptions = {
+				target: serv.target,
+				...serv.options,
+				logProvider: (): LogProvider => {
 					return {
 						log: log.info,
 						debug: log.info,
@@ -20,8 +33,8 @@ export default async function (conf: Conf, log: N9Log, app: Express): Promise<vo
 						error: log.error,
 					};
 				},
-			});
+			};
 			app.use(proxy.createProxyMiddleware([`${serv.context}/**`, '!**/routes'], proxyOptions));
 		});
 	}
-}
+};
