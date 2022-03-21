@@ -8,7 +8,6 @@ cd n9-node-microservice-skeleton
 docker-compose build
 
 docker network create backend
-docker run -it --network backend --name mongodb -d mongo
 docker-compose up
 ```
 

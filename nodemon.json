@@ -1,5 +1,5 @@
 {
-  "watch": ["src/", "mongodb-migration-scripts"],
+  "watch": ["src/"],
   "ignoreRoot": [".git"],
   "delay": 1000,
   "ext": "ts js json yaml"
