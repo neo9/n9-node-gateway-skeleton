@@ -78,7 +78,7 @@
     "glob": "^7.2.0",
     "http-proxy-middleware": "^2.0.4",
     "imperium": "^2.0.2",
-    "jsonwebtoken": "^8.2.1",
+    "jsonwebtoken": "^9.0.0",
     "lodash": "^4.17.21",
     "n9-node-routing": "^1.33.0",
     "route-parser": "^0.0.5",
